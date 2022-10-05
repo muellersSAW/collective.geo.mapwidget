@@ -1,5 +1,5 @@
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import getMultiAdapter, getUtility
 from zope.publisher.interfaces.browser import IBrowserView
 from Products.CMFCore.Expression import Expression, getExprContext
@@ -11,24 +11,28 @@ from collective.geo.mapwidget.interfaces import (
     IMapLayers, IMapView,
     IDefaultMapLayers
 )
+import six
 
 
+# TODO: shall this be a IMapView or the view itself?
+@implementer(IMapView)
 class MapView(BrowserView):
     '''
     Helper view to look up mapwidgets for current view and context.
     '''
-    # TODO: shall this be a IMapView or the view itself?
-    implements(IMapView)
 
     def mapwidgets(self):
         # if IBrowserView.providedBy(self.context):
-        return getMultiAdapter(
+        result = getMultiAdapter(
             (self.context, self.request, self.context.context),
             IMaps
         )
+        #import pdb; pdb.set_trace()
+        return result
         # return []
 
 
+@implementer(IMaps)
 class MapWidgets(list):
     '''IMaps adapter which initialises IMapWidgets
     for current view ad context.
@@ -70,9 +74,9 @@ class MapWidgets(list):
 #         """Return the number of items.
 #         """
 
-    implements(IMaps)
 
     def __init__(self, view, request, context):
+
         self.keys = {}
         self.view = view
         self.request = request
@@ -83,7 +87,7 @@ class MapWidgets(list):
                 if IMapWidget.providedBy(mapid):
                     # is already a MapWidget, just take it
                     self.__append(mapid.mapid, mapid)
-                elif isinstance(mapid, basestring):
+                elif isinstance(mapid, six.string_types):
                     # is only a name... lookup the widget
                     self.__append(
                         mapid,
@@ -111,16 +115,15 @@ class MapWidgets(list):
         self.append(value)
 
     def __getitem__(self, key):
-        if isinstance(key, basestring):
+        if isinstance(key, six.string_types):
             return self.keys[key]
         return super(MapWidgets, self).__getitem__(key)
 
 
+@implementer(IMapWidget)
 class MapWidget(object):
     '''The default IMapWidget, which also can serve as handy base class.
     '''
-
-    implements(IMapWidget)
 
     mapid = 'default-cgmap'
     klass = 'widget-cgmap'
@@ -128,6 +131,7 @@ class MapWidget(object):
     _layers = []
 
     def __init__(self, view, request, context):
+        #import pdb; pdb.set_trace()
         self.view = view
         self.request = request
         self.context = context
@@ -141,10 +145,10 @@ class MapWidget(object):
 
     def addClass(self, klass):
         if not self.klass:
-            self.klass = unicode(klass)
+            self.klass = six.text_type(klass)
         else:
             # Make sure items are not repeated.
-            parts = self.klass.split() + [unicode(klass)]
+            parts = self.klass.split() + [six.text_type(klass)]
             self.klass = u' '.join(frozenset(parts))
 
     def map_defaults(self):
@@ -194,6 +198,7 @@ class MapWidget(object):
         # import pdb; pdb.set_trace( )
 
 
+@implementer(IMapLayers)
 class MapLayers(dict):
     '''
     The default IMapLayers implementation.
@@ -205,8 +210,6 @@ class MapLayers(dict):
           implementation.
           esp.: it should not look for widget._layers attribute.
     '''
-
-    implements(IMapLayers)
 
     def __init__(self, view, request, context, widget):
         self.view = view
@@ -232,7 +235,7 @@ class MapLayers(dict):
             for layerid in maplayers:
                 if IMapLayer.providedBy(layerid):
                     layers.append(layerid)
-                elif isinstance(layerid, basestring):
+                elif isinstance(layerid, six.string_types):
                     layers.append(
                         getMultiAdapter(
                             (

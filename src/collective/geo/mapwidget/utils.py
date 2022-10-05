@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib
+from six.moves import urllib
 from collective.geo.mapwidget.interfaces import IGeoCoder
 from collective.geo.settings.interfaces import IGeoFeatureStyle
 
@@ -9,7 +9,7 @@ from geopy.exc import GeocoderQueryError
 from plone import api
 from plone.registry.interfaces import IRegistry
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.schema import getFields
 from zope.component import getUtility
 from zExceptions import NotFound
@@ -38,7 +38,7 @@ def getProtocolFromRequest(request):
     client browsers reporting errors to users.
     """
     server_url = request and request.get('SERVER_URL', '') or None
-    return server_url and urllib.splittype(server_url)[0] or 'http'
+    return server_url and urllib.parse.urlparse(server_url)[0] or 'http'
 
 
 def list_language_files():
@@ -66,11 +66,11 @@ def get_geocoder():
     return GeoCoderUtility()
 
 
+@implementer(IGeoCoder)
 class GeoCoderUtility(object):
     """Wrapper class for geopy
     """
-    implements(IGeoCoder)
-
+    
     def retrieve(self, address=None, google_api=None, language=None):
         # TODO: fix google_api > secret_key and client_id parameters
         # See https://github.com/geopy/geopy/blob/master/geopy/geocoders/googlev3.py#L31

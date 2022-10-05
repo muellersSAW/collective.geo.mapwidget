@@ -35,7 +35,7 @@ setup(name='collective.geo.mapwidget',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'BeautifulSoup',
+          'BeautifulSoup4',
           'geopy>=0.98',
           'Products.CMFCore',
           'plone.api',

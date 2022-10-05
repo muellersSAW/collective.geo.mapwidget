@@ -1,4 +1,4 @@
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import unittest
 from decimal import Decimal
 
@@ -23,7 +23,7 @@ class TestSetupHTTP(unittest.TestCase):
         self.geosettings = getUtility(IRegistry).forInterface(IGeoSettings)
 
     def beforeTearDown(self):
-        url_parts = urllib.splittype(self._old_request_url)
+        url_parts = six.moves.urllib.parse.splittype(self._old_request_url)
         self.portal.REQUEST.setServerURL(*url_parts)
 
     def test_property_zoom(self):

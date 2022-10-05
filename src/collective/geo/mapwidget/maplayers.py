@@ -3,7 +3,7 @@ This module contains IMapLayer implementations for commonly available
 base maps. These layers can be configured in the geo-settings control panel
 or may be re-used in manually configured map-widgets.
 """
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import getUtility, queryMultiAdapter
 from zope.component import getMultiAdapter
 
@@ -18,6 +18,7 @@ from collective.geo.mapwidget import GeoMapwidgetMessageFactory as _
 from collective.geo.mapwidget import utils
 
 
+@implementer(IMapLayer)
 class MapLayer(object):
     '''
     An empty IMapLayer implementation, useful as base class.
@@ -25,8 +26,7 @@ class MapLayer(object):
     MapLayers are named components specific for
     (view, request, context, widget).
     '''
-
-    implements(IMapLayer)
+    
     Title = u""
     name = u""
     # we need a property to evaluate if the layer map is based on google
@@ -138,22 +138,23 @@ class ShapeDisplayLayer(MapLayer):
         try:
             template = getMultiAdapter(
                 (self.context, self.request),
-                name=str('%s-layer' % self.name)
+                name = '{}-layer'.format(self.name)
             )
         except AttributeError:
-            return u""
+            return u"error"
 
-        return template() % {
-            'title': self.Title,
-            'coords': self.widget.coords()
-        }
+        javascriptstring = template()
+        result = javascriptstring % self.widget.coords()
+
+        return result
 
 
+
+@implementer(IDefaultMapLayers)
 class DefaultMapLayers(object):
     """Utility to store default map layers
     """
 
-    implements(IDefaultMapLayers)
 
     @property
     def geo_settings(self):

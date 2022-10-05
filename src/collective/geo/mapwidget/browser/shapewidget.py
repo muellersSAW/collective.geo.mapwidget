@@ -30,4 +30,4 @@ class ShapeMapWidget(MapWidget):
         $('#%s').collectivegeo('add_geocoder');
     });
 }(jQuery));
-""" % (self.mapid, wkt_field_id)
+""" % (self.mapid, wkt_field_id, self.mapid)

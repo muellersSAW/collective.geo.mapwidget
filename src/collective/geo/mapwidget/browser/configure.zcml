@@ -53,20 +53,40 @@
         for="z3c.form.interfaces.IFieldWidget
              zope.publisher.interfaces.browser.IBrowserRequest
              OFS.interfaces.IItem"
+        provides="collective.geo.mapwidget.interfaces.IMaps"
+        factory=".widget.MapWidgets"
+        />
+
+    <adapter
+        for="zope.browser.interfaces.IBrowserView
+             zope.publisher.interfaces.browser.IBrowserRequest
+             OFS.interfaces.IItem"
+        provides="collective.geo.mapwidget.interfaces.IMaps"
+        factory=".widget.MapWidgets"
+        />
+
+    <adapter
+        for="z3c.form.interfaces.IFieldWidget
+             zope.publisher.interfaces.browser.IBrowserRequest
+             plone.dexterity.interfaces.IDexterityItem"
+        provides="collective.geo.mapwidget.interfaces.IMaps"
         factory=".widget.MapWidgets"
         />
     <adapter
         for="zope.browser.interfaces.IBrowserView
              zope.publisher.interfaces.browser.IBrowserRequest
-             OFS.interfaces.IItem"
+             plone.dexterity.interfaces.IDexterityItem"
+        provides="collective.geo.mapwidget.interfaces.IMaps"
         factory=".widget.MapWidgets"
         />
+        
 
     <!-- ..interfaces.IMapView -->
     <adapter
         for="zope.interface.Interface
              zope.interface.Interface
              zope.interface.Interface"
+        provides="collective.geo.mapwidget.interfaces.IMapWidget"
         factory=".widget.MapWidget"
         name="default-cgmap"
         />
@@ -76,6 +96,7 @@
              zope.interface.Interface
              zope.interface.Interface"
         factory=".controlpanel.ControlPanelMapWidget"
+        provides="collective.geo.mapwidget.interfaces.IMapWidget"
         name="geosettings-cgmap"
         />
 
@@ -85,6 +106,7 @@
              zope.interface.Interface
              zope.interface.Interface
              ..interfaces.IMapWidget"
+        provides="collective.geo.mapwidget.interfaces.IMapLayers"
         factory=".widget.MapLayers" />
 
 
@@ -93,6 +115,7 @@
         for="collective.geo.mapwidget.interfaces.IMapView
            zope.interface.Interface
            zope.interface.Interface"
+        provides="collective.geo.mapwidget.interfaces.IMapWidget"
         factory=".shapewidget.ShapeMapWidget"
         name="geoshapemap" />
 

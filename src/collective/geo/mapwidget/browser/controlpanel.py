@@ -12,7 +12,7 @@ from plone.z3cform.fieldsets import extensible, group
 from plone.z3cform.layout import FormWrapper
 from z3c.form import field, form, subform, button
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implementer
 from zope.schema import Choice
 
 
@@ -21,6 +21,7 @@ def back_to_controlpanel(context):
     return dict(url='%s/plone_control_panel' % portal_url)
 
 
+@implementer(IMapView)
 class GeopointForm(subform.EditSubForm):
     heading = _(u"Default map position")
     contents_top = _(
@@ -29,7 +30,6 @@ class GeopointForm(subform.EditSubForm):
         u"(e.g. when displaying the map "
         u"to georeference an item for the first time)")
     template = ViewPageTemplateFile('geopointform.pt')
-    implements(IMapView)
     fields = field.Fields(IGeoSettings).select('longitude', 'latitude',
                                                'zoom')
     mapfields = ['geosettings-cgmap']
